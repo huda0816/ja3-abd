@@ -193,7 +193,7 @@ function UpdateSuspicion(alliedUnits, enemyUnits, intermediate_update)
 				anySusUpdated = true
 				break
 			else
-				TriggerUnitAlert("discovered", ally)
+				-- TriggerUnitAlert("discovered", ally)
 				return
 			end
 		end

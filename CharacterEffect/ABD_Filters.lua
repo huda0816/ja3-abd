@@ -13,7 +13,7 @@ DefineClass.ABD_Filters = {
 			end,
 		}),
 	},
-	Description = T(541869531536, --[[ModItemCharacterEffectCompositeDef ABD_Filters Description]] "Hidden Modifiers"),
+	Description = T(149413334248, --[[ModItemCharacterEffectCompositeDef ABD_Filters Description]] "Hidden Modifiers"),
 	HideOnBadge = true,
 }
 

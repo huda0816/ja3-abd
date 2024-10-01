@@ -2,7 +2,7 @@ return PlaceObj('ModDef', {
 	'title', "Altered Battle Dynamics",
 	'id', "D55GHCb",
 	'author', "permanent666",
-	'version', 923,
+	'version', 984,
 	'lua_revision', 233360,
 	'saved_with_revision', 350233,
 	'code', {
@@ -20,11 +20,12 @@ return PlaceObj('ModDef', {
 		"Code/CLASS_ABD_AI.lua",
 		"Code/OR_ClassDef-AI.lua",
 		"Code/CLASS_ABD_Darkness.lua",
+		"Code/OR_ActionFX.lua",
 	},
 	'default_options', {},
 	'has_data', true,
-	'saved', 1727731015,
-	'code_hash', -193041881577734848,
+	'saved', 1727821939,
+	'code_hash', -8486352043431124202,
 	'affected_resources', {
 		PlaceObj('ModResourcePreset', {
 			'Class', "AIArchetype",

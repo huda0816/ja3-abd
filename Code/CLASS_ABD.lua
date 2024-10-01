@@ -1,3 +1,6 @@
+
+MapVar("mv_ABD_BushCache", {})
+
 DefineClass.ABD = {
 	--props	
 }
@@ -17,13 +20,26 @@ function ABD:AddFilters()
 end
 
 function ABD:IsInBush(unit)
-	local enum_bush_radius = const.AnimMomentHookTraverseVegetationRadius
 
 	local pos = unit:GetPos()
 
+	local hashedPos = point_pack(pos)
+
+	mv_ABD_BushCache = mv_ABD_BushCache or {}
+
+	if mv_ABD_BushCache[hashedPos] then
+		return mv_ABD_BushCache[hashedPos]
+	end
+
+	local enum_bush_radius = const.AnimMomentHookTraverseVegetationRadius	
+
 	local bushes = MapGet(pos, enum_bush_radius, "TraverseVegetation", function(obj, pos) return pos:InBox(obj) end, pos)
 
-	return bushes and #bushes > 0
+	local inBush = bushes and #bushes > 0
+
+	mv_ABD_BushCache[hashedPos] = inBush
+
+	return inBush
 end
 
 function ABD:IsPlayerControlled(unit)

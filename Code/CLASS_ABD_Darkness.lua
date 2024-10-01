@@ -1,3 +1,10 @@
+-- TODOs:
+-- Adding Nightops perk to legion
+-- Adding Nightvision Goggles to Army and other units
+-- Adding natural nightsight to animals
+-- Random drops of NVGs
+
+
 DefineClass.ABD_Darkness = {
 	__parents = { "ABD" },
 	lunarMonth = 2551442,
@@ -36,6 +43,16 @@ DefineClass.ABD_Darkness = {
 				max = -1500000
 			}
 		}
+	},
+	affiliationCapabilities = {
+		Army = {
+			hasNVG = true,
+			hasNightOps = false
+		},
+		Legion = {
+			hasNVG = false,
+			hasNightOps = true
+		}
 	}
 }
 
@@ -68,14 +85,19 @@ function ABD_Darkness:ModifySightRadiusModifier(_, target, value, observer, othe
 
 	local penaltyReduce = 0
 
-	if HasPerk(observer, "NightOps") then
+	local hasNightOps = HasPerk(observer, "NightOps") or self.affiliationCapabilities[observer.Affiliation] and self.affiliationCapabilities[observer.Affiliation].hasNightOps
+
+	if hasNightOps then
 		penaltyReduce = self.nightOpsPenaltyReduction
 	end
 
 	local nvgs = observer:GetItemInSlot("NVG") or observer:GetItemInSlot("Helmet")
 
-	if IsKindOf(nvgs, "NightVisionGoggles") and nvgs.Condition > 0 then
-		penaltyReduce = penaltyReduce / 2 + (nvgs.NightVision or self.nvgBaseModifier)
+	local hasNVG = nvgs and IsKindOf(nvgs, "NightVisionGoggles") and nvgs.Condition > 0 or
+	self.affiliationCapabilities[observer.Affiliation] and self.affiliationCapabilities[observer.Affiliation].hasNVG
+
+	if hasNVG then
+		penaltyReduce = penaltyReduce / 2 + (nvgs and nvgs.NightVision or self.nvgBaseModifier)
 	end
 
 	if underGround then
@@ -90,24 +112,6 @@ function ABD_Darkness:ModifySightRadiusModifier(_, target, value, observer, othe
 	local finalModifier = Max(0, value + MulDivRound(effectiveDarkness, Max(0, 100 - penaltyReduce), 100))
 
 	return finalModifier
-end
-
-function ABD_Darkness:StoreAndApply()
-	self:SetGameVar(self.nightvisionActiveStorageKey, nil)
-
-	if not CurrentLightmodel or not CurrentLightmodel[1] or not CurrentLightmodel[1].night then
-		return self:ClearGameVar(self.originalStorageKey)
-	end
-
-	self:SetGameVar(self.originalStorageKey,
-		{
-			keyBias = CurrentLightmodel[1].ae_key_bias,
-			gamma = CurrentLightmodel[1].gamma,
-			grading_lut =
-				CurrentLightmodel[1].grading_lut
-		})
-
-	self:ApplyLightmodel()
 end
 
 function ABD_Darkness:ApplyLightmodel(nonvcheck)

@@ -47,4 +47,8 @@ function OnMsg.ItemAdded()
 	ABD_Darkness:MaybeSwitchToNightvision(SelectedObj)
 end
 
+function OnMsg.ABD_PlayFX(actionFXClass, actionFXMoment, actor, target, action_pos, action_dir)
+	ABD_Noise:HandleFXNoise(actionFXClass, actor)
+end
+
 

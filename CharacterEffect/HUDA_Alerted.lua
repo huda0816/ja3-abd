@@ -10,8 +10,8 @@ DefineClass.HUDA_Alerted = {
 			Expression = function (self, obj) return not obj.team or not obj.team.neutral end,
 		}),
 	},
-	DisplayName = T(967146229973, --[[ModItemCharacterEffectCompositeDef HUDA_Alerted DisplayName]] "Alerted"),
-	Description = T(671161358848, --[[ModItemCharacterEffectCompositeDef HUDA_Alerted Description]] "This character is alerted and shoots on sight"),
+	DisplayName = T(672319676530, --[[ModItemCharacterEffectCompositeDef HUDA_Alerted DisplayName]] "Alerted"),
+	Description = T(101697038965, --[[ModItemCharacterEffectCompositeDef HUDA_Alerted Description]] "This character is alerted and shoots on sight"),
 	OnAdded = function (self, obj)
 		--obj:AddStatusEffectImmunity("Unaware", "alerted")
 		--obj:AddStatusEffectImmunity("Surprised", "alerted")

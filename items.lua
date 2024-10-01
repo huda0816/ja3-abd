@@ -599,8 +599,8 @@ return {
 				param_bindings = false,
 			}),
 		},
-		'DisplayName', T(967146229973, --[[ModItemCharacterEffectCompositeDef HUDA_Alerted DisplayName]] "Alerted"),
-		'Description', T(671161358848, --[[ModItemCharacterEffectCompositeDef HUDA_Alerted Description]] "This character is alerted and shoots on sight"),
+		'DisplayName', T(672319676530, --[[ModItemCharacterEffectCompositeDef HUDA_Alerted DisplayName]] "Alerted"),
+		'Description', T(101697038965, --[[ModItemCharacterEffectCompositeDef HUDA_Alerted Description]] "This character is alerted and shoots on sight"),
 		'OnAdded', function (self, obj)
 			--obj:AddStatusEffectImmunity("Unaware", "alerted")
 			--obj:AddStatusEffectImmunity("Surprised", "alerted")
@@ -625,7 +625,7 @@ return {
 				param_bindings = false,
 			}),
 		},
-		'Description', T(541869531536, --[[ModItemCharacterEffectCompositeDef ABD_Filters Description]] "Hidden Modifiers"),
+		'Description', T(149413334248, --[[ModItemCharacterEffectCompositeDef ABD_Filters Description]] "Hidden Modifiers"),
 		'HideOnBadge', true,
 	}),
 	PlaceObj('ModItemCode', {
@@ -693,5 +693,9 @@ return {
 	PlaceObj('ModItemCode', {
 		'name', "CLASS_ABD_Darkness",
 		'CodeFileName', "Code/CLASS_ABD_Darkness.lua",
+	}),
+	PlaceObj('ModItemCode', {
+		'name', "OR_ActionFX",
+		'CodeFileName', "Code/OR_ActionFX.lua",
 	}),
 }
