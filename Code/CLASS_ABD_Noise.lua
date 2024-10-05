@@ -1,13 +1,328 @@
 -- TODOs:
 -- Improving reaction to sound
 -- Adding throw item to distract enemies
--- Sounds climbing
 
 MapVar("mv_ABD_SurfaceCache", {})
 
+function ABD_GetTerrainTypes()
+	return {
+		{
+			idx = 1,
+			Id = "JGrass",
+			type = "Grass",
+			noiseType = "Grass",
+		},
+		{
+			idx = 2,
+			Id = "JGrass_Mix",
+			type = "Grass",
+			noiseType = "Grass",
+		},
+		{
+			idx = 3,
+			Id = "JMud_Dry",
+			type = "Mud",
+			noiseType = "Dry",
+		},
+		{
+			idx = 4,
+			Id = "JForest_Floor_01",
+			type = "Mud",
+			noiseType = "Forest",
+		},
+		{
+			idx = 5,
+			Id = "JSand",
+			type = "Sand",
+			noiseType = "Sand",
+		},
+		{
+			idx = 6,
+			Id = "JGround_Mix",
+			type = "Jungle",
+			noiseType = "Forest",
+		},
+		{
+			idx = 7,
+			Id = "JForest_Floor_02",
+			type = "Mud",
+			noiseType = "Forest",
+		},
+		{
+			idx = 8,
+			Id = "Black",
+			type = "Sand",
+			noiseType = "Asphalt",
+		},
+		{
+			idx = 9,
+			Id = "JForest_Floor_03",
+			type = "Mud",
+			noiseType = "Forest",
+		},
+		{
+			idx = 10,
+			Id = "BeachSand_01",
+			type = "Sand",
+			noiseType = "Sand",
+		},
+		{
+			idx = 11,
+			Id = "BeachSand_02",
+			type = "Sand",
+			noiseType = "Sand",
+		},
+		{
+			idx = 12,
+			Id = "BeachSand_03",
+			type = "Sand",
+			noiseType = "Sand",
+		},
+		{
+			idx = 13,
+			Id = "BeachSand_04",
+			type = "Sand",
+			noiseType = "Sand",
+		},
+		{
+			idx = 14,
+			Id = "BeachSand_05",
+			type = "Sand",
+			noiseType = "Sand",
+		},
+		{
+			idx = 15,
+			Id = "JMud_Wet",
+			type = "Mud",
+			noiseType = "Water",
+		},
+		{
+			idx = 16,
+			Id = "JMud_01",
+			type = "Mud",
+			noiseType = "Water",
+		},
+		{
+			idx = 17,
+			Id = "JMud_02",
+			type = "Water",
+			noiseType = "Water",
+		},
+		{
+			idx = 18,
+			Id = "JMoss_01",
+			type = "Grass",
+			noiseType = "Grass",
+		},
+		{
+			idx = 19,
+			Id = "Grass_01",
+			type = "Grass",
+			noiseType = "Grass",
+		},
+		{
+			idx = 20,
+			Id = "Skeleton",
+			type = "Grass",
+			noiseType = "Gravel",
+		},
+		{
+			idx = 21,
+			Id = "M_Concrete_01",
+			type = "Asphalt",
+			noiseType = "Asphalt",
+		},
+		{
+			idx = 22,
+			Id = "M_Concrete_02",
+			type = "Asphalt",
+			noiseType = "Asphalt",
+		},
+		{
+			idx = 23,
+			Id = "M_Concrete_03",
+			type = "Asphalt",
+			noiseType = "Asphalt",
+		},
+		{
+			idx = 24,
+			Id = "Dry_cracked",
+			type = "Dry",
+			noiseType = "Dry",
+		},
+		{
+			idx = 25,
+			Id = "Dry_mud",
+			type = "Mud",
+			noiseType = "Dry",
+		},
+		{
+			idx = 26,
+			Id = "Dry_gravelly",
+			noiseType = "Gravel"
+		},
+		{
+			idx = 27,
+			Id = "New_grass",
+			type = "Grass",
+			noiseType = "Grass",
+		},
+		{
+			idx = 28,
+			Id = "RiverMud_Dry_01",
+			type = "Mud",
+			noiseType = "Dry",
+		},
+		{
+			idx = 29,
+			Id = "RiverMud_01",
+			type = "Mud",
+			noiseType = "Water",
+		},
+		{
+			idx = 30,
+			Id = "RiverSand",
+			type = "Sand",
+			noiseType = "Sand",
+		},
+		{
+			idx = 31,
+			Id = "RiverMud_02",
+			type = "Mud",
+			noiseType = "Water",
+		},
+		{
+			idx = 32,
+			Id = "Dry_grass",
+			type = "Grass",
+			noiseType = "Grass",
+		},
+		{
+			idx = 33,
+			Id = "Dry_BurntGround_01",
+			type = "Dry",
+			noiseType = "Dry",
+		},
+		{
+			idx = 34,
+			Id = "Dry_BurntGround_02",
+			type = "Dry",
+			noiseType = "Dry",
+		},
+		{
+			idx = 35,
+			Id = "Dry_stony_01",
+			type = "Sand",
+			noiseType = "Gravel",
+		},
+		{
+			idx = 36,
+			Id = "Dry_cracked_02",
+			type = "Dry",
+			noiseType = "Dry",
+		},
+		{
+			idx = 37,
+			Id = "Dry_rock_01",
+			type = "Gravel",
+			noiseType = "Gravel",
+		},
+		{
+			idx = 38,
+			Id = "Dry_rock_02",
+			type = "Gravel",
+			noiseType = "Gravel",
+		},
+		{
+			idx = 39,
+			Id = "Dry_stony_02",
+			type = "Sand",
+			noiseType = "Gravel",
+		},
+		{
+			idx = 40,
+			Id = "City_Dump_01",
+			noiseType = "Gravel",
+		},
+		{
+			idx = 41,
+			Id = "City_Tiles01",
+			noiseType = "Asphalt",
+		},
+		{
+			idx = 42,
+			Id = "CityToxic_01",
+			noiseType = "Asphalt",
+		},
+		{
+			idx = 43,
+			Id = "CityGravel_01",
+			noiseType = "Gravel",
+		},
+		{
+			idx = 44,
+			Id = "Dry_sand_01",
+			type = "Sand",
+			noiseType = "Sand",
+		},
+		{
+			idx = 45,
+			Id = "RiverWalkable",
+			type = "Water",
+			noiseType = "Water",
+		},
+		{
+			idx = 46,
+			Id = "RiverPlant_01",
+			type = "Water",
+			noiseType = "Water",
+		},
+		{
+			idx = 47,
+			Id = "RiverImpassable",
+			type = "Water",
+			noiseType = "Water",
+		},
+		{
+			idx = 48,
+			Id = "Farm_01",
+			noiseType = "Grass",
+		},
+		{
+			idx = 49,
+			Id = "Farm_02",
+			noiseType = "Grass",
+		},
+		{
+			idx = 50,
+			Id = "Asphalt_01",
+			type = "Asphalt",
+			noiseType = "Asphalt",
+		},
+		{
+			idx = 51,
+			Id = "Asphalt_02",
+			type = "Asphalt",
+			noiseType = "Asphalt",
+		},
+		{
+			idx = 52,
+			Id = "JMud_Dry_02",
+			type = "Mud",
+			noiseType = "Forest",
+		},
+		{
+			idx = 53,
+			Id = "JMud_Mix",
+			type = "Mud",
+			noiseType = "Forest",
+		}
+	}
+end
+
 DefineClass.ABD_Noise = {
 	__parents = { "ABD" },
-	terrainNoiseTypeTable = g_ABD_TerrainNoiseTypeTable,
+	terrainNoiseTypeTable = ABD_GetTerrainTypes(),
 	surfaceNoiseRangeModifierFallback = 100,
 	surfaceNoiseChanceFallback = 10,
 	surfaceNoiseTypeStats = {
@@ -89,8 +404,16 @@ DefineClass.ABD_Noise = {
 	defaultNoiseRadius = 30,
 	untraceableChanceModifier = -40,
 	stealthyChanceModifier = -40,
-	bushChanceModifier = 80,
-	bushRangeModifier = 50,
+	bushChanceModifier = {
+		Grass = 20,
+		Low = 30,
+		Bush = 80
+	},
+	bushRangeModifier = {
+		Grass = 20,
+		Low = 30,
+		Bush = 50
+	},
 	hiddenRangeModifier = -25,
 	noiseThread = nil,
 	debounceStorage = {},
@@ -167,40 +490,40 @@ function ABD_Noise:DoNoise(actor, enemy, noiseRadius, distance)
 end
 
 function ABD_Noise:Effects(actor, enemy, noiseRadius, distance)
-	if g_Combat then
+	if g_Combat or
+		enemy:IsDead() or
+		enemy:HasStatusEffect("Unconscious") or
+		enemy:HasStatusEffect("Downed") or
+		self:IsPlayerControlled(enemy) or
+		not enemy:IsInterruptable()
+	then
 		return
 	end
 
-	if not self:IsPlayerControlled(enemy) then
-		if enemy:IsInterruptable() then
-			-- lets roll a dice to see if the enemy will just turn around or investigate the noise
+	local noiseRoll = InteractionRand(40, "Noise")
 
-			local noiseRoll = InteractionRand(40, "Noise")
+	local closenessPercent = MulDivRound(noiseRadius - distance, 100, noiseRadius)
 
-			local closenessPercent = MulDivRound(noiseRadius - distance, 100, noiseRadius)
-
-			if noiseRoll + 30 > closenessPercent then
-				enemy:SetCommand("FaceAttackerCommand", actor)
-			else
+	if noiseRoll + 30 > closenessPercent then
+		enemy:SetCommand("FaceAttackerCommand", actor)
+	else
+		if enemy.command ~= "GotoSlab" then
+			print("investigate noise", enemy.session_id)
+			local originalPos = enemy:GetPos()
+			enemy:SetCommand("GotoSlab", actor:GetPos(), nil, nil, "Walk")
+			for i = 1, 200 do
 				if enemy.command ~= "GotoSlab" then
-					print("investigate noise", enemy.session_id)
-					local originalPos = enemy:GetPos()
-					enemy:SetCommand("GotoSlab", actor:GetPos(), nil, nil, "Walk")
-					for i = 1, 200 do
-						if enemy.command ~= "GotoSlab" then
-							break
-						end
-						Sleep(50)
+					break
+				end
+				Sleep(50)
 
-						if i > 100 then
-							local returnRoll = InteractionRand(100, "Noise")
+				if i > 100 then
+					local returnRoll = InteractionRand(100, "Noise")
 
-							if returnRoll < i - 100 then
-								enemy:SetCommand("GotoSlab", originalPos, nil, nil, "Walk")
+					if returnRoll < i - 100 then
+						enemy:SetCommand("GotoSlab", originalPos, nil, nil, "Walk")
 
-								break
-							end
-						end
+						break
 					end
 				end
 			end
@@ -255,7 +578,7 @@ function ABD_Noise:GetNoiseRadius(actor, mappedNoiseType)
 
 	local surfaceStats = self:GetSurfaceStats(actor)
 
-	local inBush
+	local inBush, highestBush, bushes = self:IsInBush(actor)
 
 	if hidden then
 		local noiseChance = surfaceStats.noiseChance
@@ -266,9 +589,9 @@ function ABD_Noise:GetNoiseRadius(actor, mappedNoiseType)
 
 		modifier = HasPerk(actor, "Stealthy") and modifier + self.stealthyChanceModifier or modifier
 
-		inBush = self:IsInBush(actor)
+		local bushChanceModifier = inBush and self.bushChanceModifier[highestBush] or 0
 
-		modifier = inBush and modifier + self.bushChanceModifier or modifier
+		modifier = modifier + bushChanceModifier
 
 		noiseChance = MulDivRound(noiseChance, Max(0, modifier), 100)
 
@@ -289,9 +612,7 @@ function ABD_Noise:GetNoiseRadius(actor, mappedNoiseType)
 
 	local noiseRangeModifier = surfaceStats.noiseRangeModifier
 
-	inBush = inBush ~= nil and inBush or self:IsInBush(actor)
-
-	noiseRangeModifier = inBush and noiseRangeModifier + self.bushRangeModifier or noiseRangeModifier
+	noiseRangeModifier = inBush and noiseRangeModifier + self.bushRangeModifier[highestBush] or noiseRangeModifier
 
 	noiseRangeModifier = hidden and noiseRangeModifier + self.hiddenRangeModifier or noiseRangeModifier
 
@@ -377,8 +698,6 @@ function ABD_Noise:GetSurfaceType(unit)
 
 	return surfaceType
 end
-
-GameVar("gv_ABD_Actions", {})
 
 function ABD_Noise:HandleFXNoise(actionFXClass, actor)
 	local mappedNoiseType = self.noiseTypeMapping[actionFXClass.fx_type]

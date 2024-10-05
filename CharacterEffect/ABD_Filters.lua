@@ -9,7 +9,9 @@ DefineClass.ABD_Filters = {
 		PlaceObj('UnitReaction', {
 			Event = "OnCalcSightModifier",
 			Handler = function (self, target, value, observer, other, step_pos, darkness)
-				return ABD_Darkness:ModifySightRadiusModifier(self,target,value,observer,other,step_pos,darkness)
+				value =  ABD_Darkness:ModifySightRadiusModifier(self,target,value,observer,other,step_pos,darkness)
+				value = ABD_Camo:ModifySightRadiusModifier(self,target,value,observer,other,step_pos,darkness)
+				return value
 			end,
 		}),
 	},

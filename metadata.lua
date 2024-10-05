@@ -2,13 +2,14 @@ return PlaceObj('ModDef', {
 	'title', "Altered Battle Dynamics",
 	'id', "D55GHCb",
 	'author', "permanent666",
-	'version', 984,
+	'version', 1118,
 	'lua_revision', 233360,
 	'saved_with_revision', 350233,
 	'code', {
 		"Code/BOOTSTRAP.lua",
 		"CharacterEffect/HUDA_Alerted.lua",
 		"CharacterEffect/ABD_Filters.lua",
+		"CharacterEffect/ABD_Concealed.lua",
 		"Code/CLASS_ABD_Dynamics.lua",
 		"Code/CLASS_ABD.lua",
 		"Code/OR_Unit.lua",
@@ -24,8 +25,8 @@ return PlaceObj('ModDef', {
 	},
 	'default_options', {},
 	'has_data', true,
-	'saved', 1727821939,
-	'code_hash', -8486352043431124202,
+	'saved', 1728166175,
+	'code_hash', 7045838649317033183,
 	'affected_resources', {
 		PlaceObj('ModResourcePreset', {
 			'Class', "AIArchetype",
@@ -70,6 +71,21 @@ return PlaceObj('ModDef', {
 		PlaceObj('ModResourcePreset', {
 			'Class', "CharacterEffectCompositeDef",
 			'Id', "ABD_Filters",
+			'ClassDisplayName', "Character effect",
+		}),
+		PlaceObj('ModResourcePreset', {
+			'Class', "ConstDef",
+			'Id', "SightModHiddenProne",
+			'ClassDisplayName', "Constant",
+		}),
+		PlaceObj('ModResourcePreset', {
+			'Class', "ConstDef",
+			'Id', "SightModStealthStatDiff",
+			'ClassDisplayName', "Constant",
+		}),
+		PlaceObj('ModResourcePreset', {
+			'Class', "CharacterEffectCompositeDef",
+			'Id', "ABD_Concealed",
 			'ClassDisplayName', "Character effect",
 		}),
 		PlaceObj('ModResourcePreset', {

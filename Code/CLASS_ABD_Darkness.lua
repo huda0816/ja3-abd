@@ -64,8 +64,7 @@ function ABD_Darkness:GetMoonPercent()
 end
 
 function ABD_Darkness:ModifySightRadiusModifier(_, target, value, observer, other, step_pos, darkness)
-	-- TODO: There has to be a better way to do this
-	if value < 100 then
+	if target ~= observer then
 		return value
 	end
 

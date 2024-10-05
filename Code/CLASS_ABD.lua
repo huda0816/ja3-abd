@@ -1,11 +1,13 @@
-
 MapVar("mv_ABD_BushCache", {})
+MapVar("mv_ABD_Bushes", {})
 
 DefineClass.ABD = {
 	--props	
 }
 
 function ABD:Init()
+	Inspect(Platform)
+
 	self:AddFilters()
 end
 
@@ -19,27 +21,74 @@ function ABD:AddFilters()
 	end
 end
 
-function ABD:IsInBush(unit)
-
+function ABD:IsInBush(unit, vegClasses)
 	local pos = unit:GetPos()
 
 	local hashedPos = point_pack(pos)
 
 	mv_ABD_BushCache = mv_ABD_BushCache or {}
 
-	if mv_ABD_BushCache[hashedPos] then
-		return mv_ABD_BushCache[hashedPos]
+	local cached = mv_ABD_BushCache[hashedPos]
+
+	if cached ~= nil then
+		if cached == false then
+			return false
+		else
+			return true, cached[1], cached[2]
+		end
 	end
 
-	local enum_bush_radius = const.AnimMomentHookTraverseVegetationRadius	
+	local vegTypeHierachy = {
+		Bush = 30,
+		Low = 20,
+		Grass = 10
+	}
 
-	local bushes = MapGet(pos, enum_bush_radius, "TraverseVegetation", function(obj, pos) return pos:InBox(obj) end, pos)
+	vegClasses = vegClasses or {
+		"TraverseVegetation",
+		"Grass"
+	}
 
-	local inBush = bushes and #bushes > 0
+	local allBushes = {}
 
-	mv_ABD_BushCache[hashedPos] = inBush
+	local entityData = EntityData
 
-	return inBush
+	for i, vegClass in ipairs(vegClasses) do
+		local bushes = MapGet(pos, 1000, vegClass, function(obj, pos) return pos:InBox(obj) end, pos)
+
+		if #bushes > 0 then
+			for i, bush in ipairs(bushes) do
+				local bushType = "Grass"
+
+				if vegClass ~= "Grass" then
+					local entity = entityData[bush.class]
+
+					bushType = entity and entity.editor_subcategory or "Grass"
+				end
+
+				allBushes[bush.class] = bushType
+			end
+		end
+	end
+
+	if not next(allBushes) then
+		mv_ABD_BushCache[hashedPos] = false
+		return false
+	end
+
+	local highestBush = "Grass"
+
+	for class, bushType in pairs(allBushes) do
+		bushType = bushType == "Tree" and "Bush" or bushType
+	
+		if not highestBush or vegTypeHierachy[bushType] > vegTypeHierachy[highestBush] then
+			highestBush = bushType
+		end
+	end
+
+	mv_ABD_BushCache[hashedPos] = { highestBush, allBushes }
+
+	return true, highestBush, allBushes
 end
 
 function ABD:IsPlayerControlled(unit)
@@ -52,6 +101,18 @@ function ABD:IsPlayerControlled(unit)
 		return false
 	end
 	return true
+end
+
+function ABD:GetUnitSector(unit, id)
+	local squad = gv_Squads[unit.Squad]
+	if not squad then return nil end
+	local sectorId = squad.CurrentSector
+	return id and sectorId or sectorId and gv_Sectors[sectorId]
+end
+
+
+function ABD:IsMoving(unit)
+	return unit.is_moving
 end
 
 function ABD:SetGameVar(key, value)
@@ -68,6 +129,27 @@ function ABD:SetGameVar(key, value)
 			current[k] = current[k] or {}
 			current = current[k]
 		end
+	end
+end
+
+function ABD:SetStatusEffectWithStacks(unit, effect, stacks)
+	local statusEffect = unit:GetStatusEffect(effect)
+	if statusEffect then
+		local currentStacks = statusEffect.stacks
+
+		if currentStacks == stacks then
+			return
+		end
+
+		local diff = abs(currentStacks - stacks)
+
+		if currentStacks >= stacks then
+			unit:RemoveStatusEffect(effect, currentStacks - diff)
+		else
+			unit:AddStatusEffect(effect, diff)
+		end
+	else
+		unit:AddStatusEffect(effect, stacks)
 	end
 end
 

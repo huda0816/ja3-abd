@@ -620,13 +620,36 @@ return {
 			PlaceObj('UnitReaction', {
 				Event = "OnCalcSightModifier",
 				Handler = function (self, target, value, observer, other, step_pos, darkness)
-					return ABD_Darkness:ModifySightRadiusModifier(self,target,value,observer,other,step_pos,darkness)
+					value =  ABD_Darkness:ModifySightRadiusModifier(self,target,value,observer,other,step_pos,darkness)
+					value = ABD_Camo:ModifySightRadiusModifier(self,target,value,observer,other,step_pos,darkness)
+					return value
 				end,
 				param_bindings = false,
 			}),
 		},
 		'Description', T(149413334248, --[[ModItemCharacterEffectCompositeDef ABD_Filters Description]] "Hidden Modifiers"),
 		'HideOnBadge', true,
+	}),
+	PlaceObj('ModItemConstDef', {
+		Comment = "sight penalty (as % of base value) for seeing hidden units in prone stance",
+		group = "Combat",
+		id = "SightModHiddenProne",
+	}),
+	PlaceObj('ModItemConstDef', {
+		Comment = "what percentage of the stat difference (Agility - Wisdom) is applied as a sight modifier to units trying to see a Hidden unit",
+		group = "Combat",
+		id = "SightModStealthStatDiff",
+		scale = "%",
+	}),
+	PlaceObj('ModItemCharacterEffectCompositeDef', {
+		'Id', "ABD_Concealed",
+		'object_class', "CharacterEffect",
+		'DisplayName', T(121080689484, --[[ModItemCharacterEffectCompositeDef ABD_Concealed DisplayName]] "Concealed"),
+		'Description', T(937946970632, --[[ModItemCharacterEffectCompositeDef ABD_Concealed Description]] "Shows the concealment factor of a unit"),
+		'type', "Buff",
+		'Icon', "Mod/D55GHCb/icons/concealed.png",
+		'max_stacks', 5,
+		'Shown', true,
 	}),
 	PlaceObj('ModItemCode', {
 		'name', "CLASS_ABD_Dynamics",

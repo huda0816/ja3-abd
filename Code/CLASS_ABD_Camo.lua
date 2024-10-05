@@ -1,3 +1,219 @@
+-- TODOs:
+-- Introduce Camo value to Armor and Helmet items
+-- Make Ghillie suit item
+-- Biome specific camo values
+
+MapVar("mv_ABD_SectorTerrain", "")
+
+AppendClass.Unit = {
+	properties = {
+		ABD_concealment = 0
+	}
+}
+
 DefineClass.ABD_Camo = {
 	__parents = { "ABD" },
+	sightRadiusInBushModifier = -10,
+	sightRadiusDefaultCamoModifier = -10,
+	sightRadiusCamoTerrainModifier = {
+		Farmland = -10,
+		Highlands = -5,
+		Jungle = -20,
+		Savanna = -10,
+		Swamp = -20,
+		Urban = 0,
+		Wasteland = -5
+	},
+	camoConcealmentModifier = 80,
+	inBushBonus = {
+		LowStandalone = {
+			Prone = 20,
+			Crouch = 10,
+			Standing = 0
+		},
+		Low = {
+			Prone = 40,
+			Crouch = 10,
+			Standing = 0
+		},
+		Grass = {
+			Prone = 30,
+			Crouch = 0,
+			Standing = 0
+		},
+		Bush = {
+			Prone = 50,
+			Crouch = 40,
+			Standing = 10
+		}
+	},
+	concealmentMovementModifier = {
+		Open = {
+			StepRun = -100,
+			StepWalk = -100,
+			StepRunCrouch = -80,
+			StepRunProne = -30,
+			HiddenStepRunCrouch = -30,
+			HiddenStepRunProne = -20,
+		},
+		Grass = {
+			StepRun = -100,
+			StepWalk = -100,
+			StepRunCrouch = -80,
+			StepRunProne = -20,
+			HiddenStepRunCrouch = -30,
+			HiddenStepRunProne = -10,
+		},
+		Low = {
+			StepRun = -100,
+			StepWalk = -100,
+			StepRunCrouch = -70,
+			StepRunProne = -15,
+			HiddenStepRunCrouch = -25,
+			HiddenStepRunProne = -10,
+		},
+		LowStandalone = {
+			StepRun = -100,
+			StepWalk = -100,
+			StepRunCrouch = -70,
+			StepRunProne = -25,
+			HiddenStepRunCrouch = -25,
+			HiddenStepRunProne = -20,
+		},
+		Bush = {
+			StepRun = -100,
+			StepWalk = -80,
+			StepRunCrouch = -60,
+			StepRunProne = -10,
+			HiddenStepRunCrouch = -10,
+			HiddenStepRunProne = -5,
+		}
+	},
+	concealmentStanceModifier = {
+		Prone = 50,
+		Crouch = 30,
+		Standing = -20,
+	},
+	sightRadiusCoverModifier = -10,
+	concealmentPerkModifiers = {
+		Stealthy = 20,
+		UntraceAble = 10
+	},
 }
+
+function ABD_Camo:GetSectorTerrain(unit)
+	if mv_ABD_SectorTerrain and mv_ABD_SectorTerrain ~= "" then
+		return mv_ABD_SectorTerrain
+	end
+
+	local sector = self:GetUnitSector(unit)
+
+	mv_ABD_SectorTerrain = sector and sector.TerrainType or "Urban"
+
+	return mv_ABD_SectorTerrain
+end
+
+-- TODO more cammo items like helmets, ghillie suits etc
+-- Get Camo effectivness from the camo itself
+function ABD_Camo:GetCamoModifier(unit)
+	local armor = unit:GetItemInSlot("Torso", "Armor")
+
+	if not armor or not armor.Camouflage then
+		return 0
+	end --
+
+	return self.camoConcealmentModifier
+end
+
+function ABD_Camo:GetConcealmentMovementModifier(unit)
+	if not unit.is_moving then
+		return 0
+	end
+
+	local movementType = unit.move_step_fx
+
+	local inBush, highestBush, bushes = self:IsInBush(unit)
+
+	highestBush = inBush and (highestBush == "Low" and #bushes == 1 and "LowStandalone" or highestBush) or "Open"
+
+	movementType = unit:HasStatusEffect("Hidden") and "Hidden" .. movementType or movementType
+
+	return self.concealmentMovementModifier[highestBush][movementType] or 0
+end
+
+function ABD_Camo:GetBaseConcealment(unit)
+	local inBush, highestBush, bushes = self:IsInBush(unit)
+
+	if not inBush then
+		return 0
+	end
+
+	highestBush = highestBush == "Low" and #bushes == 1 and "LowStandalone" or highestBush
+
+	local bushBonus = self.inBushBonus[highestBush][unit.stance] or 0
+
+	return Max(bushBonus, 0)
+end
+
+function ABD_Camo:GetConcealmentPerkModifiers(unit)
+	local concealment = 0
+
+	for perk, value in pairs(self.concealmentPerkModifiers) do
+		if unit:HasStatusEffect(perk) then
+			concealment = concealment + value
+		end
+	end
+
+	return concealment
+end
+
+function ABD_Camo:UpdateConcealment(unit)
+	local concealment = 0
+
+	local concealment = self:GetBaseConcealment(unit)
+
+	concealment = Min(concealment, 100)
+
+	local modifier = 100
+
+	modifier = modifier + self:GetConcealmentMovementModifier(unit)
+
+	modifier = modifier + self:GetConcealmentPerkModifiers(unit)
+
+	modifier = modifier + self:GetCamoModifier(unit)
+
+	modifier = Max(modifier, 0)
+
+	concealment = MulDivRound(concealment, modifier, 100)
+
+	unit.ABD_concealment = concealment
+
+	if unit.ABD_concealment > 0 then
+		self:SetStatusEffectWithStacks(unit, "ABD_Concealed", DivRound(unit.ABD_concealment, 20))
+	else
+		unit:RemoveStatusEffect("ABD_Concealed")
+	end
+end
+
+function ABD_Camo:UpdateAllConcealment()
+	local units = g_Units
+
+	for i, v in ipairs(units) do
+		self:UpdateConcealment(v)
+	end
+end
+
+function ABD_Camo:GetCamoValue(unit)
+	-- at the moment only 0 or 1
+	local armor = unit:GetItemInSlot("Torso", "Armor")
+
+	return armor and armor.Camouflage and 1 or 0
+end
+
+function ABD_Camo:ModifySightRadiusModifier(_, target, value, observer, other, step_pos, darkness)
+	if not other or not IsKindOf(other, "Unit") or target ~= observer then
+		return value
+	end
+
+	return other.ABD_concealment and other.ABD_concealment > 0 and value - other.ABD_concealment / 2 or value
+end

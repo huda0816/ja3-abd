@@ -51,4 +51,20 @@ function OnMsg.ABD_PlayFX(actionFXClass, actionFXMoment, actor, target, action_p
 	ABD_Noise:HandleFXNoise(actionFXClass, actor)
 end
 
+function OnMsg.ExplorationTick()
+	ABD_Camo:UpdateAllConcealment()
+end
+
+function OnMsg.UnitMovementStart(unit)
+	ABD_Camo:UpdateConcealment(unit)
+end
+
+function OnMsg.UnitStanceChanged(unit)
+	ABD_Camo:UpdateConcealment(unit)
+end
+
+function OnMsg.UnitMovementDone(unit)
+	ABD_Camo:UpdateConcealment(unit)
+end
+
 

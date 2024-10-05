@@ -1,3 +1,25 @@
+local OriginalPushUnitAlert = PushUnitAlert
+
+function PushUnitAlert(trigger_type, ...)
+	if trigger_type == "noise" then
+		local actor, radius, soundName, attacker = ...
+
+		print(TDevModeGetEnglishText(soundName))
+
+		radius = actor == attacker and MulDivRound(radius, 150, 100) or radius
+
+		print("Noise alert", TDevModeGetEnglishText(actor.Name or actor.Nick), "radius", radius)
+
+		return OriginalPushUnitAlert(trigger_type, actor, radius, soundName, attacker)
+	end
+
+	return OriginalPushUnitAlert(trigger_type, ...)
+end
+
+
+--- Moving units are easier to detect than stationary units.
+--- Units which are prone or crouched or in cover are harder to detect.
+
 local lSuspicionTickRate = 100                             -- How often to add the tick amount
 local lSuspicionTickAmount = 14                            -- The amount to add when hidden
 local lSuspicionTickAmountProjector = 6                    -- The amount to add when hidden
@@ -216,7 +238,7 @@ function UpdateSuspicion(alliedUnits, enemyUnits, intermediate_update)
 end
 
 function PropagateAwareness(alerted_units, roles, killed_units)
-	local i = 1
+	local i = 1	
 	while i <= #alerted_units do
 		local unit = alerted_units[i]
 		local killed = killed_units and table.find(killed_units, unit)
