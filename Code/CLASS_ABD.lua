@@ -1,13 +1,11 @@
 MapVar("mv_ABD_BushCache", {})
-MapVar("mv_ABD_Bushes", {})
+MapVar("mv_ABD_Weather", "")
 
 DefineClass.ABD = {
 	--props	
 }
 
 function ABD:Init()
-	Inspect(Platform)
-
 	self:AddFilters()
 end
 
@@ -80,7 +78,7 @@ function ABD:IsInBush(unit, vegClasses)
 
 	for class, bushType in pairs(allBushes) do
 		bushType = bushType == "Tree" and "Bush" or bushType
-	
+
 		if not highestBush or vegTypeHierachy[bushType] > vegTypeHierachy[highestBush] then
 			highestBush = bushType
 		end
@@ -89,6 +87,25 @@ function ABD:IsInBush(unit, vegClasses)
 	mv_ABD_BushCache[hashedPos] = { highestBush, allBushes }
 
 	return true, highestBush, allBushes
+end
+
+function ABD:GetSectorWeather()
+	
+	return "RainHeavy"
+
+	-- local sectorId = gv_CurrentSectorId
+
+	-- mv_ABD_Weather = mv_ABD_Weather or ""
+
+	-- if mv_ABD_Weather and mv_ABD_Weather ~= "" then
+	-- 	return mv_ABD_Weather
+	-- end
+
+	-- local weather = GetCurrentSectorWeather(sectorId) or "ClearSky"
+
+	-- mv_ABD_Weather = weather
+
+	-- return weather
 end
 
 function ABD:IsPlayerControlled(unit)
@@ -109,7 +126,6 @@ function ABD:GetUnitSector(unit, id)
 	local sectorId = squad.CurrentSector
 	return id and sectorId or sectorId and gv_Sectors[sectorId]
 end
-
 
 function ABD:IsMoving(unit)
 	return unit.is_moving

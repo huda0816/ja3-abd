@@ -13,19 +13,8 @@ AppendClass.Unit = {
 
 DefineClass.ABD_Camo = {
 	__parents = { "ABD" },
-	sightRadiusInBushModifier = -10,
-	sightRadiusDefaultCamoModifier = -10,
-	sightRadiusCamoTerrainModifier = {
-		Farmland = -10,
-		Highlands = -5,
-		Jungle = -20,
-		Savanna = -10,
-		Swamp = -20,
-		Urban = 0,
-		Wasteland = -5
-	},
 	camoConcealmentModifier = 80,
-	inBushBonus = {
+	baseConcealment = {
 		LowStandalone = {
 			Prone = 20,
 			Crouch = 10,
@@ -89,16 +78,11 @@ DefineClass.ABD_Camo = {
 			HiddenStepRunProne = -5,
 		}
 	},
-	concealmentStanceModifier = {
-		Prone = 50,
-		Crouch = 30,
-		Standing = -20,
-	},
-	sightRadiusCoverModifier = -10,
 	concealmentPerkModifiers = {
 		Stealthy = 20,
 		UntraceAble = 10
 	},
+	concealmentToSightRadiusModifier = 70
 }
 
 function ABD_Camo:GetSectorTerrain(unit)
@@ -150,7 +134,7 @@ function ABD_Camo:GetBaseConcealment(unit)
 
 	highestBush = highestBush == "Low" and #bushes == 1 and "LowStandalone" or highestBush
 
-	local bushBonus = self.inBushBonus[highestBush][unit.stance] or 0
+	local bushBonus = self.baseConcealment[highestBush][unit.stance] or 0
 
 	return Max(bushBonus, 0)
 end
@@ -211,9 +195,11 @@ function ABD_Camo:GetCamoValue(unit)
 end
 
 function ABD_Camo:ModifySightRadiusModifier(_, target, value, observer, other, step_pos, darkness)
-	if not other or not IsKindOf(other, "Unit") or target ~= observer then
+	if not other or not IsKindOf(other, "Unit") or target ~= observer or not other.ABD_concealment or other.ABD_concealment <= 0 then
 		return value
 	end
 
-	return other.ABD_concealment and other.ABD_concealment > 0 and value - other.ABD_concealment / 2 or value
+	local concealmentModifier = MulDivRound(other.ABD_concealment, self.concealmentToSightRadiusModifier, 100)
+
+	return Max(0, value - concealmentModifier)
 end

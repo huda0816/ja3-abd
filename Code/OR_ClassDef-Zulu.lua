@@ -46,7 +46,7 @@ function UnitProperties:SelectArchetype(proto_context)
 		func = template and template.PickCustomArchetype or self.PickCustomArchetype
 	end
 
-	-- archetype = "TacticalRetreat"
+	-- archetype = "Illuminator"
 
 	if not ABD:IsPlayerControlled(self) and not archetype or archetype == "Scout_LastLocation" then
 		local cacheTable = GetTargetsAndMore(self)

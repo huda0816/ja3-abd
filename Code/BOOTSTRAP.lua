@@ -49,6 +49,10 @@ end
 
 function OnMsg.ABD_PlayFX(actionFXClass, actionFXMoment, actor, target, action_pos, action_dir)
 	ABD_Noise:HandleFXNoise(actionFXClass, actor)
+
+	if actionFXClass == "LightningStrike" then
+		ABD_Darkness:IlluminateMap()
+	end
 end
 
 function OnMsg.ExplorationTick()
@@ -66,5 +70,4 @@ end
 function OnMsg.UnitMovementDone(unit)
 	ABD_Camo:UpdateConcealment(unit)
 end
-
 
