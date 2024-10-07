@@ -10,7 +10,7 @@ return PlaceObj('ModDef', {
 	},
 	'id', "D55GHCb",
 	'author', "permanent666",
-	'version', 1286,
+	'version', 1368,
 	'lua_revision', 233360,
 	'saved_with_revision', 350233,
 	'code', {
@@ -39,8 +39,8 @@ return PlaceObj('ModDef', {
 	},
 	'default_options', {},
 	'has_data', true,
-	'saved', 1728253469,
-	'code_hash', -6244274114498817412,
+	'saved', 1728342615,
+	'code_hash', 7776361352468286783,
 	'affected_resources', {
 		PlaceObj('ModResourcePreset', {
 			'Class', "AIArchetype",
@@ -113,11 +113,6 @@ return PlaceObj('ModDef', {
 			'ClassDisplayName', "Inventory item",
 		}),
 		PlaceObj('ModResourcePreset', {
-			'Class', "ParticleSystemPreset",
-			'Id', "Wpn_Flashlight_LightCone",
-			'ClassDisplayName', "Particle system",
-		}),
-		PlaceObj('ModResourcePreset', {
 			'Class', "ConstDef",
 			'Id', "CamoSightPenalty",
 			'ClassDisplayName', "Constant",
@@ -156,6 +151,11 @@ return PlaceObj('ModDef', {
 			'Class', "AIArchetype",
 			'Id', "Illuminator",
 			'ClassDisplayName', "AI Archetype",
+		}),
+		PlaceObj('ModResourcePreset', {
+			'Class', "ParticleSystemPreset",
+			'Id', "Wpn_Flashlight_LightCone",
+			'ClassDisplayName', "Particle system",
 		}),
 	},
 })

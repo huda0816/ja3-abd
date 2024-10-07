@@ -91,21 +91,19 @@ end
 
 function ABD:GetSectorWeather()
 	
-	return "RainHeavy"
+	local sectorId = gv_CurrentSectorId
 
-	-- local sectorId = gv_CurrentSectorId
+	mv_ABD_Weather = mv_ABD_Weather or ""
 
-	-- mv_ABD_Weather = mv_ABD_Weather or ""
+	if mv_ABD_Weather and mv_ABD_Weather ~= "" then
+		return mv_ABD_Weather
+	end
 
-	-- if mv_ABD_Weather and mv_ABD_Weather ~= "" then
-	-- 	return mv_ABD_Weather
-	-- end
+	local weather = GetCurrentSectorWeather(sectorId) or "ClearSky"
 
-	-- local weather = GetCurrentSectorWeather(sectorId) or "ClearSky"
+	mv_ABD_Weather = weather
 
-	-- mv_ABD_Weather = weather
-
-	-- return weather
+	return weather
 end
 
 function ABD:IsPlayerControlled(unit)

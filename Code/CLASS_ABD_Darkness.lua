@@ -286,9 +286,9 @@ function ABD_Darkness:ResetLightmodel()
 end
 
 function ABD_Darkness:GetLightness()
-	-- if self:GetGameVar("darkness.lightness") then
-	-- 	return self:GetGameVar("darkness.lightness")
-	-- end
+	if self:GetGameVar("darkness.lightness") then
+		return self:GetGameVar("darkness.lightness")
+	end
 
 	local weather = self:GetSectorWeather()
 
