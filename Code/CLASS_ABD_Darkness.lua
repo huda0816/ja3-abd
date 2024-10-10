@@ -112,7 +112,9 @@ function ABD_Darkness:ModifySightRadiusModifier(_, target, value, observer, othe
 		penaltyReduce = self.nightOpsPenaltyReduction
 	end
 
-	if self:HasNvgs(observer) then
+	local hasNvgs, nvgs = self:HasNvgs(observer)
+
+	if hasNvgs then
 		penaltyReduce = penaltyReduce / 2 + (nvgs and nvgs.NightVision or self.nvgBaseModifier)
 	elseif self:HasFlashlight(observer) then
 		penaltyReduce = penaltyReduce / 2 + self.flashLightModifier
@@ -136,7 +138,7 @@ function ABD_Darkness:HasNvgs(unit)
 	local nvgs = unit:GetItemInSlot("NVG") or unit:GetItemInSlot("Head")
 
 	return nvgs and IsKindOf(nvgs, "NightVisionGoggles") and nvgs.Condition > 0 or
-		self.affiliationCapabilities[unit.Affiliation] and self.affiliationCapabilities[unit.Affiliation].hasNVG
+		self.affiliationCapabilities[unit.Affiliation] and self.affiliationCapabilities[unit.Affiliation].hasNVG, nvgs
 end
 
 function ABD_Darkness:HasFlashlight(unit)
@@ -475,3 +477,43 @@ function ABD_Darkness:TestLighting()
 	pos = (lookat + pos):SetTerrainZ() + point(0, 0, 30 * guim)
 	PlayFX("LightningStrike", "start", pos, pos, pos)
 end
+
+local function playTurnOnFx(unit, weapon)
+	local visual = weapon and weapon.visual_obj
+	if not visual then return end
+	
+	for slot, component_id in sorted_pairs(weapon.components) do
+		local component = WeaponComponents[component_id]
+		if component and component.EnableAimFX then
+			local fx_actor
+			for _, descr in ipairs(component and component.Visuals) do
+				if descr:Match(weapon.class) then
+					fx_actor = visual.parts[descr.Slot]
+					if fx_actor then
+						break
+					end
+				end
+			end
+			fx_actor = fx_actor or visual
+			PlayFX("TurnOn", "start", fx_actor)
+			unit.weapon_light_fx = unit.weapon_light_fx or {}
+			unit.weapon_light_fx[#unit.weapon_light_fx + 1] = fx_actor
+		end
+	end
+end
+
+function ABD_Darkness:ToggleWeaponLight(unit, enable)
+
+	for _, fx_actor in ipairs(unit.weapon_light_fx) do
+		PlayFX("TurnOn", "end", fx_actor)
+	end
+	unit.weapon_light_fx = false
+	
+	if enable and unit.visible and not unit:CanQuickPlayInCombat() then
+		local weapon1, weapon2 = unit:GetActiveWeapons()
+		playTurnOnFx(unit, weapon1)
+		playTurnOnFx(unit, weapon2)
+	end
+
+end
+
