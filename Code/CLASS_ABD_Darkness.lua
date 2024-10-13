@@ -288,45 +288,47 @@ function ABD_Darkness:ResetLightmodel()
 end
 
 function ABD_Darkness:GetLightness()
-	if self:GetGameVar("darkness.lightness") then
-		return self:GetGameVar("darkness.lightness")
-	end
+	return 0
 
-	local weather = self:GetSectorWeather()
+	-- if self:GetGameVar("darkness.lightness") then
+	-- 	return self:GetGameVar("darkness.lightness")
+	-- end
 
-	local lightness = self:GetMoonEffectiveness(weather)
+	-- local weather = self:GetSectorWeather()
 
-	local t = GetTimeAsTable(Game.CampaignTime)
+	-- local lightness = self:GetMoonEffectiveness(weather)
 
-	local isDustOrDawn
+	-- local t = GetTimeAsTable(Game.CampaignTime)
 
-	if t.hour >= self.dawnHour and t.hour < self.dawnHour + self.dustDawnLength then
-		isDustOrDawn = 'dawn'
-	elseif t.hour >= self.dustHour and t.hour < self.dustHour + self.dustDawnLength then
-		isDustOrDawn = 'dust'
-	end
+	-- local isDustOrDawn
 
-	if isDustOrDawn then
-		local hours = abs(t.hour - (isDustOrDawn == 'dawn' and self.dawnHour or self.dustHour))
+	-- if t.hour >= self.dawnHour and t.hour < self.dawnHour + self.dustDawnLength then
+	-- 	isDustOrDawn = 'dawn'
+	-- elseif t.hour >= self.dustHour and t.hour < self.dustHour + self.dustDawnLength then
+	-- 	isDustOrDawn = 'dust'
+	-- end
 
-		local min = t.min + hours * 60
+	-- if isDustOrDawn then
+	-- 	local hours = abs(t.hour - (isDustOrDawn == 'dawn' and self.dawnHour or self.dustHour))
 
-		local dustdawnPercent = MulDivRound(isDustOrDawn == 'dawn' and min or 60 - min, 100, self.dustDawnLength * 60)
+	-- 	local min = t.min + hours * 60
 
-		local weatherModifier = self.weatherDustDawnModifier[weather] or 100
+	-- 	local dustdawnPercent = MulDivRound(isDustOrDawn == 'dawn' and min or 60 - min, 100, self.dustDawnLength * 60)
 
-		dustdawnPercent = MulDivRound(dustdawnPercent, weatherModifier, 100)
+	-- 	local weatherModifier = self.weatherDustDawnModifier[weather] or 100
 
-		dustdawnPercent = MulDivRound(dustdawnPercent,
-			self.weatherMoonEffectivenessFactor[self:GetSectorWeather()] or 100, 100)
+	-- 	dustdawnPercent = MulDivRound(dustdawnPercent, weatherModifier, 100)
+
+	-- 	dustdawnPercent = MulDivRound(dustdawnPercent,
+	-- 		self.weatherMoonEffectivenessFactor[self:GetSectorWeather()] or 100, 100)
 
 
-		lightness = Max(lightness, dustdawnPercent)
-	end
+	-- 	lightness = Max(lightness, dustdawnPercent)
+	-- end
 
-	self:SetGameVar("darkness.lightness", lightness)
+	-- self:SetGameVar("darkness.lightness", lightness)
 
-	return lightness
+	-- return lightness
 end
 
 function ABD_Darkness:AI_Illumination(unit)
@@ -435,32 +437,6 @@ function ABD_Darkness:PrepareAIFlareGun(unit)
 	return flareGun
 end
 
-function ABD_Darkness:AI_AddFlashlight(unit)
-	local currentSlot = unit.current_weapon
-
-	local items = unit:GetEquippedWeapons(currentSlot)
-
-	for i, item in ipairs(items) do
-		if item.components and item.components.Side and item.components.Side ~= "" then
-			Inspect(item)
-			return
-		end
-
-		local componentSlot = table.find_value(item.ComponentSlots, "SlotType", "Side")
-
-		if not componentSlot then
-			return
-		end
-
-		for i, component in ipairs(componentSlot.AvailableComponents) do
-			if component == "Flashlight" then
-				item:SetWeaponComponent("Side", "Flashlight")
-				return
-			end
-		end
-	end
-end
-
 function ABD_Darkness:IlluminateMap()
 	local thread = CreateGameTimeThread(function(self)
 		self:SetGameVar("darkness.lightning", true)
@@ -477,43 +453,3 @@ function ABD_Darkness:TestLighting()
 	pos = (lookat + pos):SetTerrainZ() + point(0, 0, 30 * guim)
 	PlayFX("LightningStrike", "start", pos, pos, pos)
 end
-
-local function playTurnOnFx(unit, weapon)
-	local visual = weapon and weapon.visual_obj
-	if not visual then return end
-	
-	for slot, component_id in sorted_pairs(weapon.components) do
-		local component = WeaponComponents[component_id]
-		if component and component.EnableAimFX then
-			local fx_actor
-			for _, descr in ipairs(component and component.Visuals) do
-				if descr:Match(weapon.class) then
-					fx_actor = visual.parts[descr.Slot]
-					if fx_actor then
-						break
-					end
-				end
-			end
-			fx_actor = fx_actor or visual
-			PlayFX("TurnOn", "start", fx_actor)
-			unit.weapon_light_fx = unit.weapon_light_fx or {}
-			unit.weapon_light_fx[#unit.weapon_light_fx + 1] = fx_actor
-		end
-	end
-end
-
-function ABD_Darkness:ToggleWeaponLight(unit, enable)
-
-	for _, fx_actor in ipairs(unit.weapon_light_fx) do
-		PlayFX("TurnOn", "end", fx_actor)
-	end
-	unit.weapon_light_fx = false
-	
-	if enable and unit.visible and not unit:CanQuickPlayInCombat() then
-		local weapon1, weapon2 = unit:GetActiveWeapons()
-		playTurnOnFx(unit, weapon1)
-		playTurnOnFx(unit, weapon2)
-	end
-
-end
-

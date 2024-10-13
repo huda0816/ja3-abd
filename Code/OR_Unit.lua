@@ -1,7 +1,7 @@
 local ABD_Original_SetWeaponLightFx = Unit.SetWeaponLightFx
 
 function Unit:SetWeaponLightFx(enable)
-	print("silence is golden")
+	-- print("silence is golden")
 	-- for _, fx_actor in ipairs(self.weapon_light_fx) do
 	-- 	PlayFX("TurnOn", "end", fx_actor)
 	-- end
