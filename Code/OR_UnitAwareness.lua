@@ -1,15 +1,14 @@
 function OnMsg.Autorun()
+	
 	local OriginalPushUnitAlert = PushUnitAlert
 
 	function PushUnitAlert(trigger_type, ...)
 		if trigger_type == "noise" then
 			local actor, radius, soundName, attacker = ...
 
-			print(TDevModeGetEnglishText(soundName))
+			ABD_Dynamics:NoiseTresholdAlert(actor, radius, soundName, attacker)
 
-			radius = actor == attacker and MulDivRound(radius, 150, 100) or radius
-
-			print("Noise alert", TDevModeGetEnglishText(actor.Name or actor.Nick), "radius", radius)
+			radius = ABD_Dynamics:AdjustGunshotRadius(actor, radius, soundName, attacker)
 
 			return OriginalPushUnitAlert(trigger_type, actor, radius, soundName, attacker)
 		end
@@ -20,16 +19,16 @@ function OnMsg.Autorun()
 	--- Moving units are easier to detect than stationary units.
 	--- Units which are prone or crouched or in cover are harder to detect.
 
-	local lSuspicionTickRate = 100       -- How often to add the tick amount
-	local lSuspicionTickAmount = 14      -- The amount to add when hidden
+	local lSuspicionTickRate = 100        -- How often to add the tick amount
+	local lSuspicionTickAmount = 14       -- The amount to add when hidden
 	local lSuspicionTickAmountProjector = 6 -- The amount to add when hidden
-	local lSuspicionTickAmountProne = 8  -- The amount to add when hidden and in prone
+	local lSuspicionTickAmountProne = 8   -- The amount to add when hidden and in prone
 	local lSuspicionTickAmountNotHidden = 20 -- The amount to add when not hidden
-	local lSuspicionTickDownAmount = 2   -- The amount to remove when no unit is in range
+	local lSuspicionTickDownAmount = 2    -- The amount to remove when no unit is in range
 	local lSuspicionTickMinDist = const.SlabSizeX *
-		2                                -- If this close to an enemy then frontness doesn't matter (unless hidden or in the dark)
+		2                                 -- If this close to an enemy then frontness doesn't matter (unless hidden or in the dark)
 	local lSuspicionTickDistanceModOuter = const.SlabSizeX *
-		4                                -- Past this distance in the sight radius the distance modifier is 100%
+		4                                 -- Past this distance in the sight radius the distance modifier is 100%
 	local lCubicInIndex = GetEasingIndex("Cubic in")
 
 	-- MapVar("lastSusUpdate", 0)
@@ -215,7 +214,7 @@ function OnMsg.Autorun()
 					anySusUpdated = true
 					break
 				else
-					-- TriggerUnitAlert("discovered", ally)
+					TriggerUnitAlert("discovered", ally)
 					return
 				end
 			end
@@ -237,31 +236,10 @@ function OnMsg.Autorun()
 		return susIncreasedBy
 	end
 
+	local ABD_Original_PropagateAwareness = PropagateAwareness
+
 	function PropagateAwareness(alerted_units, roles, killed_units)
-		local i = 1
-		while i <= #alerted_units do
-			local unit = alerted_units[i]
-			local killed = killed_units and table.find(killed_units, unit)
-			if not unit:IsDead() or killed then
-				local upos = GetPackedPosAndStance(unit, killed and unit.killed_stance)
-				local allies = GetAllAlliedUnits(unit)
-				for _, ally in ipairs(allies) do
-					if IsValidTarget(ally) and (ally.team.side == "neutral" or (not ally:IsAware() and ally.pending_aware_state ~= "aware")) then
-						local apos = GetPackedPosAndStance(ally)
-						local sight = ally:GetSightRadius(unit)
-						if apos and upos and (stance_pos_dist(upos, apos) <= sight) and stance_pos_visibility(upos, apos) then
-							table.insert_unique(alerted_units, ally)
-							if roles then
-								if not roles[unit] then
-									roles[unit] = "alerter"
-								end
-								roles[ally] = "alerted"
-							end
-						end
-					end
-				end
-			end
-			i = i + 1
-		end
+		ABD_Original_PropagateAwareness(alerted_units, roles, killed_units)
+		ABD_Dynamics:PropagateAwareness(alerted_units, roles, killed_units)
 	end
 end

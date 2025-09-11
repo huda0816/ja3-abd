@@ -38,44 +38,44 @@ DefineClass.ABD_Camo = {
 	},
 	concealmentMovementModifier = {
 		Open = {
-			StepRun = -100,
-			StepWalk = -100,
-			StepRunCrouch = -80,
-			StepRunProne = -30,
-			HiddenStepRunCrouch = -30,
-			HiddenStepRunProne = -20,
+			StepRun = -1000,
+			StepWalk = -1000,
+			StepRunCrouch = -1000,
+			StepRunProne = -1000,
+			HiddenStepRunCrouch = -1000,
+			HiddenStepRunProne = -1000,
 		},
 		Grass = {
-			StepRun = -100,
-			StepWalk = -100,
-			StepRunCrouch = -80,
-			StepRunProne = -20,
-			HiddenStepRunCrouch = -30,
-			HiddenStepRunProne = -10,
+			StepRun = -1000,
+			StepWalk = -1000,
+			StepRunCrouch = -1000,
+			StepRunProne = -60,
+			HiddenStepRunCrouch = -1000,
+			HiddenStepRunProne = -30,
 		},
 		Low = {
-			StepRun = -100,
-			StepWalk = -100,
-			StepRunCrouch = -70,
-			StepRunProne = -15,
-			HiddenStepRunCrouch = -25,
-			HiddenStepRunProne = -10,
+			StepRun = -1000,
+			StepWalk = -1000,
+			StepRunCrouch = -80,
+			StepRunProne = -60,
+			HiddenStepRunCrouch = -60,
+			HiddenStepRunProne = -30,
 		},
 		LowStandalone = {
-			StepRun = -100,
-			StepWalk = -100,
+			StepRun = -1000,
+			StepWalk = -1000,
 			StepRunCrouch = -70,
-			StepRunProne = -25,
-			HiddenStepRunCrouch = -25,
+			StepRunProne = -50,
+			HiddenStepRunCrouch = -50,
 			HiddenStepRunProne = -20,
 		},
 		Bush = {
-			StepRun = -100,
-			StepWalk = -80,
+			StepRun = -1000,
+			StepWalk = -1000,
 			StepRunCrouch = -60,
-			StepRunProne = -10,
-			HiddenStepRunCrouch = -10,
-			HiddenStepRunProne = -5,
+			StepRunProne = -40,
+			HiddenStepRunCrouch = -30,
+			HiddenStepRunProne = -10,
 		}
 	},
 	concealmentPerkModifiers = {
@@ -104,9 +104,9 @@ function ABD_Camo:GetCamoModifier(unit)
 
 	if not armor or not armor.Camouflage then
 		return 0
-	end --
+	end
 
-	return self.camoConcealmentModifier
+	return armor.camoConcealmentModifier or self.camoConcealmentModifier
 end
 
 function ABD_Camo:GetConcealmentMovementModifier(unit)

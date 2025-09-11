@@ -50,6 +50,12 @@ end
 function OnMsg.ABD_PlayFX(actionFXClass, actionFXMoment, actor, target, action_pos, action_dir)
 	ABD_Noise:HandleFXNoise(actionFXClass, actor)
 
+	if actionFXClass == "Explosion" then
+		print("Explosion")
+		ABD_Dynamics:NoiseTresholdAlert(actor, 30, "Explosion", actor)
+		--TODO: Push Unit alert
+	end
+
 	if actionFXClass == "LightningStrike" then
 		ABD_Darkness:IlluminateMap()
 	end

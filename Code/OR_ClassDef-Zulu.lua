@@ -2,6 +2,9 @@ function UnitProperties:SelectArchetype(proto_context)
 	local archetype
 	local func = empty_func
 
+
+
+
 	if IsKindOf(self, "Unit") then
 		local emplacement = g_Combat and g_Combat:GetEmplacementAssignment(self)
 		if self.retreating then
@@ -44,52 +47,64 @@ function UnitProperties:SelectArchetype(proto_context)
 		end
 		local template = UnitDataDefs[self.unitdatadef_id]
 		func = template and template.PickCustomArchetype or self.PickCustomArchetype
-	end
 
-	-- archetype = "Illuminator"
 
-	if not ABD:IsPlayerControlled(self) and not archetype or archetype == "Scout_LastLocation" then
-		local cacheTable = GetTargetsAndMore(self)
+		-- archetype = "Illuminator"
 
-		local closestDistToUncoveredEnemy = nil
+		archetype = "StrategicRetreat";
 
-		for i, dist in ipairs(cacheTable.distances) do
-			if (not closestDistToUncoveredEnemy or dist < closestDistToUncoveredEnemy) and cacheTable.covers[i] < 50 then
-				closestDistToUncoveredEnemy = dist
+		if not ABD:IsPlayerControlled(self) and not archetype or archetype == "Scout_LastLocation" then
+			local cacheTable = GetTargetsAndMore(self)
+
+			if (HUDA_CheckStrategicRetreat(self)) then
+				self.current_archetype = "StrategicRetreat"
+				print("Archetype", self.session_id, self.current_archetype)
+				return
 			end
-		end
 
-		if g_Combat and g_Combat.current_turn == 1 and (not closestDistToUncoveredEnemy or closestDistToUncoveredEnemy > 4 * const.SlabSizeX) then
-			archetype = "SeekCover"
-		end
+			if HUDA_CheckTacticalRetreat(self, cacheTable) then
+				archetype = "TacticalRetreat"
+			end
 
-		-- archetype = "Scout_LastLocation" == archetype and "SeekCover" or archetype
+			if not archetype and g_Combat and g_Combat.current_turn == 1 and HUDA_CheckSeekCover(self, cacheTable, true) then
+				archetype = "SeekCover"
+			end
 
-		if not archetype then
-			if self.archetype ~= "Brute" and self.archetype ~= "Medic" then
-				
-				if cacheTable.anyGoodAttack and cacheTable.hasGoodCover
-					and not self:IsUnderBombard()
-					and not self:IsUnderTimedTrap()
-					and not self:IsThreatened(nil, "pindown")
-					and not self:HasStatusEffect("Burning")
-					and not self:HasStatusEffect("Choking")
-				then
-					if self.AIKeywords and table.find(self.AIKeywords, "Sniper") then
-						archetype = "SpecialTurret_Sniper"
-					else
-						archetype = "SpecialTurret"
+			-- archetype = "Scout_LastLocation" == archetype and "SeekCover" or archetype
+
+			if not archetype then
+				if self.archetype ~= "Brute" and self.archetype ~= "Medic" then
+					if HUDA_CheckSpecialTurret(self, cacheTable) then
+						if self.AIKeywords and table.find(self.AIKeywords, "Sniper") then
+							archetype = "SpecialTurret_Sniper"
+						else
+							archetype = "SpecialTurret"
+						end
+					end
+
+					if HUDA_CheckSeekCover(self, cacheTable) then
+						archetype = "SeekCover"
 					end
 				end
-
-				if cacheTable.anyGoodAttack and not cacheTable.hasGoodCover and (not closestDistToUncoveredEnemy or closestDistToUncoveredEnemy > 4 * const.SlabSizeX) then
-					archetype = "SeekCover"
-				end
 			end
 		end
+
+		-- print("Archetype", archetype, self.archetype)
+
+		self.current_archetype = archetype or func(self, proto_context) or self.archetype or "Assault"
 	end
+	print("Archetype", self.session_id, self.current_archetype)
+end
 
-	print("Archetype", archetype)
+function HUDA_GetWeaponRange(unit)
+	local weapon, wep2 = unit:GetActiveWeapons()
 
-	self.current_archetype = archetype or func(self, proto_context) or self.archetype or "Assault"
+	if IsKindOf(weapon, "MeleeWeapon") then
+		local tiles = unit.body_type == "Large animal" and 2 or 1
+		local range = (2 * tiles + 1) * const.SlabSizeX / 2
+		return range
+	elseif IsKindOf(weapon, "Firearm") then
+		local max_range = weapon.WeaponRange * const.SlabSizeX
+		return 15 * max_range / 10
+	end
 end

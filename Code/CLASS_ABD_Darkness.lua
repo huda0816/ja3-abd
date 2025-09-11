@@ -80,6 +80,8 @@ function ABD_Darkness:GetMoonEffectiveness(weather)
 
 	percent = MulDivRound(percent, modifier, 100)
 
+	print("Moonlight effectiveness: " .. percent .. "%")
+
 	return percent
 end
 
@@ -288,47 +290,47 @@ function ABD_Darkness:ResetLightmodel()
 end
 
 function ABD_Darkness:GetLightness()
-	return 0
+	-- return 0
 
-	-- if self:GetGameVar("darkness.lightness") then
-	-- 	return self:GetGameVar("darkness.lightness")
-	-- end
+	if self:GetGameVar("darkness.lightness") then
+		return self:GetGameVar("darkness.lightness")
+	end
 
-	-- local weather = self:GetSectorWeather()
+	local weather = self:GetSectorWeather()
 
-	-- local lightness = self:GetMoonEffectiveness(weather)
+	local lightness = self:GetMoonEffectiveness(weather)
 
-	-- local t = GetTimeAsTable(Game.CampaignTime)
+	local t = GetTimeAsTable(Game.CampaignTime)
 
-	-- local isDustOrDawn
+	local isDustOrDawn
 
-	-- if t.hour >= self.dawnHour and t.hour < self.dawnHour + self.dustDawnLength then
-	-- 	isDustOrDawn = 'dawn'
-	-- elseif t.hour >= self.dustHour and t.hour < self.dustHour + self.dustDawnLength then
-	-- 	isDustOrDawn = 'dust'
-	-- end
+	if t.hour >= self.dawnHour and t.hour < self.dawnHour + self.dustDawnLength then
+		isDustOrDawn = 'dawn'
+	elseif t.hour >= self.dustHour and t.hour < self.dustHour + self.dustDawnLength then
+		isDustOrDawn = 'dust'
+	end
 
-	-- if isDustOrDawn then
-	-- 	local hours = abs(t.hour - (isDustOrDawn == 'dawn' and self.dawnHour or self.dustHour))
+	if isDustOrDawn then
+		local hours = abs(t.hour - (isDustOrDawn == 'dawn' and self.dawnHour or self.dustHour))
 
-	-- 	local min = t.min + hours * 60
+		local min = t.min + hours * 60
 
-	-- 	local dustdawnPercent = MulDivRound(isDustOrDawn == 'dawn' and min or 60 - min, 100, self.dustDawnLength * 60)
+		local dustdawnPercent = MulDivRound(isDustOrDawn == 'dawn' and min or 60 - min, 100, self.dustDawnLength * 60)
 
-	-- 	local weatherModifier = self.weatherDustDawnModifier[weather] or 100
+		local weatherModifier = self.weatherDustDawnModifier[weather] or 100
 
-	-- 	dustdawnPercent = MulDivRound(dustdawnPercent, weatherModifier, 100)
+		dustdawnPercent = MulDivRound(dustdawnPercent, weatherModifier, 100)
 
-	-- 	dustdawnPercent = MulDivRound(dustdawnPercent,
-	-- 		self.weatherMoonEffectivenessFactor[self:GetSectorWeather()] or 100, 100)
+		dustdawnPercent = MulDivRound(dustdawnPercent,
+			self.weatherMoonEffectivenessFactor[self:GetSectorWeather()] or 100, 100)
 
 
-	-- 	lightness = Max(lightness, dustdawnPercent)
-	-- end
+		lightness = Max(lightness, dustdawnPercent)
+	end
 
-	-- self:SetGameVar("darkness.lightness", lightness)
+	self:SetGameVar("darkness.lightness", lightness)
 
-	-- return lightness
+	return lightness
 end
 
 function ABD_Darkness:AI_Illumination(unit)

@@ -3,12 +3,19 @@ function OnMsg.UnitMovementDone(unit)
 end
 
 function OnMsg.UnitMovementStart(unit)
-	print("UnitMovementStart")
+	-- print("UnitMovementStart")
 	unit:SetIK("AimIK")
 end
 
 function OnMsg.UnitSwappedWeapon(unit)
 	ABD_Flashlight:ResetLightstatus(unit)
+end
+
+function OnMsg.OnCombatActionEnd(action, unit)
+	-- print("OnCombatActionEnd")
+	if action == "ABD_FaceDirection" then
+		ABD_Flashlight:CheckMovementEnd(unit)
+	end
 end
 
 DefineClass.ABD_Flashlight = {
@@ -28,7 +35,7 @@ DefineClass.ABD_Flashlight = {
 
 function ABD_Flashlight:IsInFlashLightCone(unit)
 	-- Performing an attack or something
-	if not IsValid(unit) or unit:IsDead() then
+	if not IsValid(unit) or not IsKindOf(unit, "Unit") or unit:IsDead() then
 		return false
 	end
 
@@ -230,18 +237,44 @@ function ABD_Flashlight:HandleLightToggle(unit, type)
 	end
 end
 
-function ABD_Flashlight:TempComponentSwitch(weapon, componentId, slot)
-	local def = WeaponComponents[componentId]
-	slot = slot or (def and def.Slot)
+function ABD_Flashlight:SetDirection(unit, target)
+	local orientation = CalcOrientation(unit, target)
 
-	if not slot or not def then
-		return
+	-- unit:SetAngle(orientation)
+
+	if g_Combat then
+		unit:AnimatedRotation(orientation)
+		-- Sleep(50)
+		-- self:CheckMovementEnd(unit)
+	else
+		CreateGameTimeThread(function()
+			unit:AnimatedRotation(orientation)
+			-- self:CheckMovementEnd(unit)
+			-- Sleep(100)
+		end)
 	end
 
-	weapon.components[slot] = componentId
-	weapon.visual_obj_dirty = true
+	SetInGameInterfaceMode(g_Combat and "IModeCombatMovement" or "IModeExploration")
 
-	weapon:UpdateVisualObj()
+	-- self:CheckMovementEnd(unit)
+end
 
-	ObjModified(weapon)
+function ABD_GetAttackParams(weapon, attacker)
+	local params = {
+		attacker = attacker,
+		weapon = weapon,
+		used_ammo = 1,
+		damage_mod = 100,
+		attribute_bonus = 0,
+		dont_destroy_covers = true
+	}
+	params.step_pos = attacker:GetPos()
+	params.stance = attacker.stance
+	params.cone_angle = 5 * 60
+	if weapon.emplacement_weapon then
+		params.min_distance_2d = 1
+	end
+	params.min_range = 1
+	params.max_range = 1
+	return params
 end

@@ -1,5 +1,13 @@
 return {
 	PlaceObj('ModItemFolder', {
+		'name', "AI Policies",
+	}, {
+		PlaceObj('ModItemCode', {
+			'name', "AIRetreatPolicyMod",
+			'CodeFileName', "Code/AIRetreatPolicyMod.lua",
+		}),
+		}),
+	PlaceObj('ModItemFolder', {
 		'name', "AI Archetypes",
 	}, {
 		PlaceObj('ModItemAIArchetype', {
@@ -384,6 +392,7 @@ return {
 					'TakeCoverChance', 100,
 				}),
 			},
+			FallbackAction = "overwatch",
 			OptLocPolicies = {
 				PlaceObj('AIPolicyTakeCover', {
 					'Required', true,
@@ -410,7 +419,7 @@ return {
 					'RangeMax', 4,
 				}),
 			},
-			OptLocSearchRadius = 40,
+			OptLocSearchRadius = 10,
 			PrefStance = "Crouch",
 			group = "Default",
 			id = "SeekCover",
@@ -418,24 +427,15 @@ return {
 		PlaceObj('ModItemAIArchetype', {
 			Behaviors = {
 				PlaceObj('PositioningAI', {
+					'Priority', true,
+					'Fallback', false,
 					'EndTurnPolicies', {
 						PlaceObj('AIPolicyLosToEnemy', {
 							'Required', true,
 							'Invert', true,
 						}),
 						PlaceObj('AIPolicyTakeCover', {
-							'visibility_mode', "all",
-						}),
-						PlaceObj('AIPolicyDealDamage', nil),
-					},
-					'TakeCoverChance', 100,
-				}),
-				PlaceObj('PositioningAI', {
-					'Weight', 1,
-					'OptLocWeight', 0,
-					'EndTurnPolicies', {
-						PlaceObj('AIPolicyTakeCover', {
-							'visibility_mode', "all",
+							'visibility_mode', "team",
 						}),
 						PlaceObj('AIPolicyDealDamage', nil),
 					},
@@ -451,6 +451,10 @@ return {
 				PlaceObj('AIPolicyTakeCover', {
 					'visibility_mode', "all",
 				}),
+				PlaceObj('AIPolicyProximity', {
+					'AllyPlannedPosition', true,
+					'TargetUnits', "allies",
+				}),
 			},
 			OptLocSearchRadius = 40,
 			PrefStance = "Crouch",
@@ -460,27 +464,16 @@ return {
 		PlaceObj('ModItemAIArchetype', {
 			Behaviors = {
 				PlaceObj('RetreatAI', {
-					'EndTurnPolicies', {
-						PlaceObj('AIPolicyTakeCover', {
-							'Weight', 10,
-						}),
-						PlaceObj('AIPolicyLosToEnemy', {
-							'Weight', 300,
-							'Invert', true,
-						}),
-						PlaceObj('AIRetreatPolicy', {
-							'Weight', 1000,
-							'Required', false,
-						}),
-					},
-					'TakeCoverChance', 0,
+					'Priority', true,
+					'DespawnAllowed', false,
 				}),
 			},
 			Comment = "retreat",
 			OptLocPolicies = {
-				PlaceObj('AIRetreatPolicy', nil),
+				PlaceObj('AIRetreatPolicyMod', nil),
 			},
-			OptLocSearchRadius = 80,
+			OptLocSearchRadius = 100,
+			PrefStance = "Crouch",
 			group = "Simplified",
 			id = "StrategicRetreat",
 		}),
@@ -1112,9 +1105,25 @@ return {
 	PlaceObj('ModItemFolder', {
 		'name', "Overrides",
 	}, {
+		PlaceObj('ModItemFolder', {
+			'name', "XTemplates",
+		}, {
+			PlaceObj('ModItemCode', {
+				'name', "X_WeaponToggles",
+				'CodeFileName', "Code/X_WeaponToggles.lua",
+			}),
+			PlaceObj('ModItemCode', {
+				'name', "XTemplateUtils",
+				'CodeFileName', "Code/XTemplateUtils.lua",
+			}),
+			}),
 		PlaceObj('ModItemCode', {
 			'name', "OR_Unit",
 			'CodeFileName', "Code/OR_Unit.lua",
+		}),
+		PlaceObj('ModItemCode', {
+			'name', "OR_CombatActions",
+			'CodeFileName', "Code/OR_CombatActions.lua",
 		}),
 		PlaceObj('ModItemCode', {
 			'name', "OR_CombatAI",
@@ -1147,18 +1156,6 @@ return {
 		PlaceObj('ModItemCode', {
 			'name', "OR_Stealth",
 			'CodeFileName', "Code/OR_Stealth.lua",
-		}),
-		}),
-	PlaceObj('ModItemFolder', {
-		'name', "XTemplates",
-	}, {
-		PlaceObj('ModItemCode', {
-			'name', "X_WeaponToggles",
-			'CodeFileName', "Code/X_WeaponToggles.lua",
-		}),
-		PlaceObj('ModItemCode', {
-			'name', "XTemplateUtils",
-			'CodeFileName', "Code/XTemplateUtils.lua",
 		}),
 		}),
 	PlaceObj('ModItemFolder', {

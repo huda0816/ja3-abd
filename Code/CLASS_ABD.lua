@@ -21,6 +21,10 @@ end
 
 function ABD:IsInBush(unit, vegClasses)
 	local pos = unit:GetPos()
+	
+	if not pos then
+		return false
+	end
 
 	local hashedPos = point_pack(pos)
 
