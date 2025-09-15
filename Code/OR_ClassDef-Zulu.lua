@@ -2,8 +2,9 @@ function UnitProperties:SelectArchetype(proto_context)
 	local archetype
 	local func = empty_func
 
-
-
+	if self.current_archetype == "StrategicRetreat" then
+		return
+	end
 
 	if IsKindOf(self, "Unit") then
 		local emplacement = g_Combat and g_Combat:GetEmplacementAssignment(self)
@@ -51,7 +52,7 @@ function UnitProperties:SelectArchetype(proto_context)
 
 		-- archetype = "Illuminator"
 
-		archetype = "StrategicRetreat";
+		-- archetype = "StrategicRetreat";
 
 		if not ABD:IsPlayerControlled(self) and not archetype or archetype == "Scout_LastLocation" then
 			local cacheTable = GetTargetsAndMore(self)

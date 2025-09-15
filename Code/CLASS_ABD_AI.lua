@@ -6,10 +6,10 @@ function OnMsg.NewCombatTurn()
 	g_HUDA_DistCache = {}
 end
 
-function OnMsg.CombatEnd()
-	-- check how many enemies are left
-	HUDA_RetreatEnemies()
-end
+-- function OnMsg.CombatEnd()
+-- 	-- check how many enemies are left
+-- 	HUDA_RetreatEnemies()
+-- end
 
 AppendClass.SatelliteSector = {
 	properties = {
@@ -20,7 +20,7 @@ AppendClass.SatelliteSector = {
 			default = {},
 		},
 		{
-			id = "ABD_alerted",
+			id = "ABD_Alerted",
 			name = "Alerted",
 			editor = "bool",
 			default = false,
@@ -28,32 +28,56 @@ AppendClass.SatelliteSector = {
 	}
 }
 
-function HUDA_RetreatEnemies()
-	local enemies = 0
-	local alliesAndPlayers = 0
+function OnMsg.ClosePDA()
 
-	for _, unit in ipairs(g_Units) do
-		if not ABD:IsPlayerControlled(unit) and not unit.retreating and not unit:IsDead() then
-			enemies = enemies + 1
-		elseif ABD:IsPlayerControlled(unit) or unit:IsDead() then
-			alliesAndPlayers = alliesAndPlayers + 1
-		end
+	print("OnMsg.ClosePDA")
+
+	local currentSectorId = gv_CurrentSectorId
+	local currentSector = gv_Sectors[currentSectorId]
+
+	if not currentSector then
+		return
 	end
 
-	-- if enemies < 3 and enemies * 2 < alliesAndPlayers then
-	local direction, sectorId = HUDA_GetBestRetreatSectorBySide("enemy1")
+	if not currentSector.ABD_Alerted then
+		return
+	end
 
-	local exitZone = HUDA_GetBestExitZoneInteractable(direction)
+	local units = g_Units
 
-	SnapCameraToObj(exitZone)
-
-	for _, unit in ipairs(g_Units) do
-		if not ABD:IsPlayerControlled(unit) and not unit.retreating and not unit:IsDead() then
-			unit:SetCommandParamValue("AdvanceTo", "move_anim", "Run")
-			unit:SetCommand("AdvanceTo", exitZone:GetHandle())
+	for i, unit in ipairs(units) do
+		if unit.CurrentSide == "enemy1" and not ABD:IsPlayerControlled(unit) and not unit.retreating and not unit:IsDead() then
+			unit:AddStatusEffect("ABD_Alerted")
 		end
 	end
 end
+
+-- function HUDA_RetreatEnemies()
+-- 	local enemies = 0
+-- 	local alliesAndPlayers = 0
+
+-- 	for _, unit in ipairs(g_Units) do
+-- 		if not ABD:IsPlayerControlled(unit) and not unit.retreating and not unit:IsDead() then
+-- 			enemies = enemies + 1
+-- 		elseif ABD:IsPlayerControlled(unit) or unit:IsDead() then
+-- 			alliesAndPlayers = alliesAndPlayers + 1
+-- 		end
+-- 	end
+
+-- 	-- if enemies < 3 and enemies * 2 < alliesAndPlayers then
+-- 	local direction, sectorId = HUDA_GetBestRetreatSectorBySide("enemy1")
+
+-- 	local exitZone = HUDA_GetBestExitZoneInteractable(direction)
+
+-- 	SnapCameraToObj(exitZone)
+
+-- 	for _, unit in ipairs(g_Units) do
+-- 		if not ABD:IsPlayerControlled(unit) and not unit.retreating and not unit:IsDead() then
+-- 			unit:SetCommandParamValue("AdvanceTo", "move_anim", "Run")
+-- 			unit:SetCommand("AdvanceTo", exitZone:GetHandle())
+-- 		end
+-- 	end
+-- end
 
 function HUDA_GetCloseUnits(unit, range)
 	local enemies = {}
@@ -279,13 +303,13 @@ function HUDA_CheckStrategicRetreat(unit)
 
 	local excludedAffiliations = { "Thugs", "SuperSoldiers" }
 
-	if HUDA_ArrayContains(excludedAffiliations, unit.Affiliation) then
+	if ABD:ArrayContains(excludedAffiliations, unit.Affiliation) then
 		return false
 	end
 
 	local excludedSectors = { "L12", "L18", "L17", "G8", "A2", "A8", "H12", "L9" }
 
-	if sectorId and HUDA_ArrayContains(excludedSectors, sectorId) then
+	if sectorId and ABD:ArrayContains(excludedSectors, sectorId) then
 		return false
 	end
 
@@ -297,19 +321,21 @@ function HUDA_CheckStrategicRetreat(unit)
 		return false
 	end
 
-	local enemies = table.ifilter(g_Units, function(k, v)
-		return unit.CurrentSide == "enemy1"
+	local enemies = table.ifilter(GetAllAlliedUnits(unit), function(k, v)
+		return not v:IsDead()
 	end)
 
-	local allies = table.ifilter(g_Units, function(k, v)
-		return unit.CurrentSide == "player1"
+	local allies = table.ifilter(GetAllEnemyUnits(unit), function(k, v)
+		return not v:IsDead()
 	end)
 
 	if unit:HasStatusEffect("Heroic") or unit:HasStatusEffect("Panicked") or unit:HasStatusEffect("Berserk") or unit:HasStatusEffect("ZombiePerk") then
 		return false
 	end
 
-	if #enemies > 2 or #enemies > #allies then
+	print(#enemies, "enemies and", #allies, "allies")
+
+	if #enemies > 2 or #enemies > (#allies + 1) then
 		return false
 	end
 	-- make a simple roll with an 80% chance to retreat
@@ -636,7 +662,7 @@ function OnMsg.ConflictEnd(sector, bNoVoice, playerAttacking, playerWon, isAutoR
 	for i, squad in ipairs(enemySquads) do
 		local notRetreatingUnits = table.ifilter(gv_UnitData, function(k, v)
 			return v.Squad == squad.UniqueId and sector.ABD_retreating_units and
-			not table.find(sector.ABD_retreating_units, v.session_id)
+				not table.find(sector.ABD_retreating_units, v.session_id)
 		end)
 
 		print("non retreating", #notRetreatingUnits)
@@ -744,7 +770,6 @@ function HUDA_MoveSquads(squadIds, city, type, src, dst)
 	end
 end
 
-
 function OnMsg.SquadFinishedTraveling(squad)
 	if not squad.Retreating then
 		return
@@ -754,5 +779,5 @@ function OnMsg.SquadFinishedTraveling(squad)
 
 	local current_sector = gv_Sectors[squad.CurrentSector]
 
-	current_sector.ABD_alerted = true
+	current_sector.ABD_Alerted = true
 end

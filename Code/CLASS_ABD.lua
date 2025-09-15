@@ -21,7 +21,7 @@ end
 
 function ABD:IsInBush(unit, vegClasses)
 	local pos = unit:GetPos()
-	
+
 	if not pos then
 		return false
 	end
@@ -94,7 +94,6 @@ function ABD:IsInBush(unit, vegClasses)
 end
 
 function ABD:GetSectorWeather()
-	
 	local sectorId = gv_CurrentSectorId
 
 	mv_ABD_Weather = mv_ABD_Weather or ""
@@ -200,4 +199,14 @@ function ABD:GetKeys(key)
 	end
 
 	return keys
+end
+
+function ABD:ArrayContains(array, value)
+	for k, v in pairs(array) do
+		if v == value then
+			return true
+		end
+	end
+
+	return false
 end
