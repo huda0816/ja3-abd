@@ -21,7 +21,7 @@ function OnMsg.CombatEnded()
 end
 
 function OnMsg.OptionsApply()
-	print("OptionsApply")
+	ABD:Print("OptionsApply")
 end
 
 function OnMsg.PostNewMapLoaded()
@@ -29,13 +29,13 @@ function OnMsg.PostNewMapLoaded()
 end
 
 function OnMsg.OpenPDA()
-	print("OpenPDA")
+	ABD:Print("OpenPDA")
 	ABD:ClearGameVar("darkness.lightness")
 	ABD_Darkness:ResetLightmodel()
 end
 
 function OnMsg.ClosePDA()
-	print("ClosePDA")
+	ABD:Print("ClosePDA")
 	ABD_Darkness:ApplyLightmodel()
 end
 
@@ -51,7 +51,7 @@ function OnMsg.ABD_PlayFX(actionFXClass, actionFXMoment, actor, target, action_p
 	ABD_Noise:HandleFXNoise(actionFXClass, actor)
 
 	if actionFXClass == "Explosion" then
-		print("Explosion")
+		ABD:Print("Explosion")
 		ABD_Dynamics:NoiseTresholdAlert(actor, 30, "Explosion", actor)
 		--TODO: Push Unit alert
 	end

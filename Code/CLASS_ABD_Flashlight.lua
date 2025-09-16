@@ -3,7 +3,6 @@ function OnMsg.UnitMovementDone(unit)
 end
 
 function OnMsg.UnitMovementStart(unit)
-	-- print("UnitMovementStart")
 	unit:SetIK("AimIK")
 end
 
@@ -12,7 +11,6 @@ function OnMsg.UnitSwappedWeapon(unit)
 end
 
 function OnMsg.OnCombatActionEnd(action, unit)
-	-- print("OnCombatActionEnd")
 	if action == "ABD_FaceDirection" then
 		ABD_Flashlight:CheckMovementEnd(unit)
 	end

@@ -80,7 +80,7 @@ function ABD_Darkness:GetMoonEffectiveness(weather)
 
 	percent = MulDivRound(percent, modifier, 100)
 
-	print("Moonlight effectiveness: " .. percent .. "%")
+	self:Print("Moonlight effectiveness: " .. percent .. "%")
 
 	return percent
 end

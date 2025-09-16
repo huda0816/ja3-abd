@@ -10,7 +10,7 @@ return PlaceObj('ModDef', {
 	},
 	'id', "D55GHCb",
 	'author', "permanent666",
-	'version', 1949,
+	'version', 1972,
 	'lua_revision', 233360,
 	'saved_with_revision', 366685,
 	'code', {
@@ -44,11 +44,12 @@ return PlaceObj('ModDef', {
 		"Code/CLASS_ABD_Noise.lua",
 		"Code/CLASS_ABD_AI.lua",
 		"Code/CLASS_ABD_Darkness.lua",
+		"Code/CLASS_ABD_Strategic.lua",
 	},
 	'default_options', {},
 	'has_data', true,
-	'saved', 1757973519,
-	'code_hash', 4832669297286152493,
+	'saved', 1758064679,
+	'code_hash', -5348333252214376768,
 	'affected_resources', {
 		PlaceObj('ModResourcePreset', {
 			'Class', "AIArchetype",

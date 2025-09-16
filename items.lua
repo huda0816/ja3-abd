@@ -1231,4 +1231,8 @@ return {
 		'name', "CLASS_ABD_Darkness",
 		'CodeFileName', "Code/CLASS_ABD_Darkness.lua",
 	}),
+	PlaceObj('ModItemCode', {
+		'name', "CLASS_ABD_Strategic",
+		'CodeFileName', "Code/CLASS_ABD_Strategic.lua",
+	}),
 }

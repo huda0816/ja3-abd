@@ -508,7 +508,6 @@ function ABD_Noise:Effects(actor, enemy, noiseRadius, distance)
 		enemy:SetCommand("FaceAttackerCommand", actor)
 	else
 		if enemy.command ~= "GotoSlab" then
-			print("investigate noise", enemy.session_id)
 			local originalPos = enemy:GetPos()
 			enemy:SetCommand("GotoSlab", actor:GetPos(), nil, nil, "Walk")
 			for i = 1, 200 do
@@ -693,7 +692,7 @@ function ABD_Noise:GetSurfaceType(unit)
 	mv_ABD_SurfaceCache[hashedPos] = surfaceType
 
 	if surfaceType == "Default" then
-		-- print("No surface type found for", pos, terrainType, material)
+		self:Print("No surface type found for", pos, terrainType, material)
 	end
 
 	return surfaceType
